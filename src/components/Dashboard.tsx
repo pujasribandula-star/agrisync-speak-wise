@@ -25,7 +25,11 @@ import { ScheduleTracker } from "@/components/ScheduleTracker";
 
 type DashboardView = 'home' | 'soil' | 'pest' | 'market' | 'voice' | 'shopping' | 'learning' | 'schedule';
 
-export const Dashboard = () => {
+interface DashboardProps {
+  onNavigate: (page: string) => void;
+}
+
+export const Dashboard = ({ onNavigate }: DashboardProps) => {
   const [currentView, setCurrentView] = useState<DashboardView>('home');
   const [notifications] = useState(3);
 
@@ -55,7 +59,7 @@ export const Dashboard = () => {
       case 'schedule':
         return <ScheduleTracker />;
       default:
-        return <DashboardHome onNavigate={setCurrentView} />;
+        return <DashboardHome onNavigate={onNavigate} />;
     }
   };
 
@@ -150,7 +154,7 @@ export const Dashboard = () => {
   );
 };
 
-const DashboardHome = ({ onNavigate }: { onNavigate: (view: DashboardView) => void }) => {
+const DashboardHome = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

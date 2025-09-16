@@ -1,30 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mic, MicOff, Volume2, VolumeX, MessageSquare, Languages } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, MessageSquare, Languages, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const VoiceAssistant = () => {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('hi');
-  const [conversation, setConversation] = useState([
-    {
-      type: 'assistant',
-      message: 'नमस्कार! मैं आपका कृषि सहायक हूं। आप मुझसे खेती के बारे में कुछ भी पूछ सकते हैं।',
-      timestamp: new Date()
-    }
-  ]);
+  const [textInput, setTextInput] = useState('');
+  const [conversation, setConversation] = useState([]);
   const { toast } = useToast();
+  const { selectedLanguage, setSelectedLanguage, languages, translate } = useLanguage();
 
-  const languages = [
-    { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
-    { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
-    { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
-    { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳' },
-    { code: 'en', name: 'English', flag: '🇺🇸' }
-  ];
+  // Initialize conversation with greeting in selected language
+  useEffect(() => {
+    setConversation([{
+      type: 'assistant',
+      message: translate('greeting'),
+      timestamp: new Date()
+    }]);
+  }, [selectedLanguage, translate]);
+
+  // Get friendly responses based on language
+  const getFriendlyResponse = (userMessage: string) => {
+    const responses = {
+      hi: {
+        greeting: ["नमस्कार! मैं यहाँ आपकी मदद के लिए हूँ। 😊", "हाय! कैसे हैं आप? मैं आपका खेती का दोस्त हूँ! 🌱"],
+        pest: "अरे यार, कीड़े की समस्या तो बहुत परेशान करने वाली है! 😟 लेकिन चिंता मत करिए, मैं आपकी पूरी मदद करूंगा। पहले तो नीम का तेल try करके देखिए - 10ml प्रति लीटर पानी में मिलाकर शाम को spray करें। यह बिलकुल natural है और कीड़ों को भगा देता है। 🌿",
+        soil: "वाह! मिट्टी की जांच कराना बहुत smart बात है! 👍 अच्छी मिट्टी = अच्छी फसल। NPK test जरूर कराएं, और pH भी check करें। अगर मिट्टी acidic है तो lime डालें, alkaline है तो organic matter बढ़ाएं। 🌱",
+        water: "पानी तो life है खेती की! 💧 आपके area में कितना पानी available है? Rice के लिए ज्यादा पानी चाहिए, wheat कम में काम चल जाता है। drip irrigation use करें तो 50% तक पानी बचा सकते हैं! 💪",
+        weather: "मौसम की बात करते हैं! ☀️🌧️ बारिश के बाद fungicide spray जरूर करें, नहीं तो fungus लग सकता है। और गर्मी में सुबह-शाम ही पानी दें, दोपहर में नहीं।",
+        default: "हम्म, interesting सवाल है! 🤔 मैं आपकी पूरी help करना चाहता हूँ। थोड़ा और detail में बताइए ताकि मैं बेहतर advice दे सकूं। आपका farming friend हूँ मैं! 😊"
+      },
+      en: {
+        greeting: ["Hello there! I'm here to help you with all your farming needs! 😊", "Hi! How are you doing? I'm your friendly farming assistant! 🌱"],
+        pest: "Oh no, pest problems can be really frustrating! 😟 But don't worry, I'm here to help you out completely. First, try neem oil - mix 10ml per liter of water and spray in the evening. It's completely natural and will drive away the pests! 🌿",
+        soil: "Wow! Getting your soil tested is a really smart move! 👍 Good soil = Good crops. Make sure to get NPK test done, and check pH too. If soil is acidic, add lime; if alkaline, increase organic matter. 🌱",
+        water: "Water is life for farming! 💧 How much water is available in your area? Rice needs more water, wheat works with less. Use drip irrigation and you can save up to 50% water! 💪",
+        weather: "Let's talk about weather! ☀️🌧️ After rain, definitely spray fungicide, otherwise fungus can develop. And in summer, water only in morning-evening, not in afternoon.",
+        default: "Hmm, that's an interesting question! 🤔 I really want to help you completely. Tell me a bit more in detail so I can give better advice. I'm your farming friend! 😊"
+      },
+      te: {
+        greeting: ["నమస్కారం! నేను మీ వ్యవసాయ అన్ని అవసరాలకు సహాయం చేయడానికి ఇక్కడ ఉన్నాను! 😊", "హాయ! ఎలా ఉన్నారు? నేను మీ స్నేహపూర్వక వ్యవసాయ సహాయకుడిని! 🌱"],
+        pest: "అయ్యో, కీటకాల సమస్యలు చాలా బాధాకరం అవుతాయి! 😟 కానీ చింతించకండి, నేను మీకు పూర్తిగా సహాయం చేస్తాను. మొదట వేప నూనె ప్రయత్నించండి - లీటరు నీటికి 10ml కలిపి సాయంత్రం స్ప్రే చేయండి. ఇది పూర్తిగా సహజమైనది మరియు కీటకాలను తోలుతుంది! 🌿",
+        default: "హమ్, ఆసక్తికరమైన ప్రశ్న! 🤔 నేను మీకు పూర్తిగా సహాయం చేయాలని అనుకుంటున్నాను. కొంచెం వివరంగా చెప్పండి, అప్పుడు నేను మంచి సలహా ఇవ్వగలను. నేను మీ వ్యవసాయ స్నేహితుడిని! 😊"
+      }
+    };
+    
+    const langResponses = responses[selectedLanguage] || responses.en;
+    
+    if (userMessage.toLowerCase().includes('pest') || userMessage.includes('कीड़े') || userMessage.includes('కీటకాలు')) {
+      return langResponses.pest;
+    } else if (userMessage.toLowerCase().includes('soil') || userMessage.includes('मिट्टी') || userMessage.includes('నేల')) {
+      return langResponses.soil;
+    } else if (userMessage.toLowerCase().includes('water') || userMessage.includes('पानी') || userMessage.includes('నీరు')) {
+      return langResponses.water;
+    } else if (userMessage.toLowerCase().includes('weather') || userMessage.includes('मौसम') || userMessage.includes('వాతావరణం')) {
+      return langResponses.weather;
+    } else if (userMessage.toLowerCase().includes('hello') || userMessage.includes('नमस्कार') || userMessage.includes('హలో')) {
+      return langResponses.greeting[Math.floor(Math.random() * langResponses.greeting.length)];
+    }
+    
+    return langResponses.default;
+  };
 
   const quickQuestions = [
     { text: "मेरी फसल में पीले पत्ते क्यों हो रहे हैं?", translation: "Why are my crop leaves turning yellow?" },
@@ -36,24 +77,31 @@ export const VoiceAssistant = () => {
   const startListening = () => {
     setIsListening(true);
     toast({
-      title: "सुन रहा हूं...",
-      description: "आप अपना सवाल पूछ सकते हैं",
+      title: translate('listening'),
+      description: translate('askQuestion'),
     });
 
-    // Simulate listening
+    // Simulate speech recognition
     setTimeout(() => {
       setIsListening(false);
-      const userMessage = "मेरी गेहूं की फसल में कीड़े लग गए हैं, क्या करूं?";
+      const sampleQuestions = {
+        hi: "मेरी गेहूं की फसल में कीड़े लग गए हैं, क्या करूं?",
+        en: "My wheat crop has pests, what should I do?",
+        te: "నా గోధుమ పంటలో కీటకాలు ఉన్నాయి, ఏమి చేయాలి?"
+      };
+      
+      const userMessage = sampleQuestions[selectedLanguage] || sampleQuestions.en;
+      
       setConversation(prev => [...prev, {
         type: 'user',
         message: userMessage,
         timestamp: new Date()
       }]);
       
-      // Simulate AI response
+      // Generate AI response with friendly tone
       setTimeout(() => {
         setIsSpeaking(true);
-        const assistantResponse = "गेहूं में कीड़े लगने पर सबसे पहले आप नीम का तेल का छिड़काव करें। 10 मिली नीम का तेल प्रति लीटर पानी में मिलाकर शाम के समय छिड़काव करें। यदि समस्या बनी रहे तो इमिडाक्लोप्रिड का उपयोग करें।";
+        const assistantResponse = getFriendlyResponse(userMessage);
         
         setConversation(prev => [...prev, {
           type: 'assistant',
@@ -63,13 +111,42 @@ export const VoiceAssistant = () => {
         
         setTimeout(() => {
           setIsSpeaking(false);
-        }, 3000);
-      }, 1000);
+        }, 4000);
+      }, 1500);
     }, 3000);
   };
 
   const stopListening = () => {
     setIsListening(false);
+  };
+
+  const sendTextMessage = () => {
+    if (!textInput.trim()) return;
+    
+    const userMessage = textInput;
+    setTextInput('');
+    
+    setConversation(prev => [...prev, {
+      type: 'user',
+      message: userMessage,
+      timestamp: new Date()
+    }]);
+
+    // Generate friendly AI response
+    setTimeout(() => {
+      setIsSpeaking(true);
+      const assistantResponse = getFriendlyResponse(userMessage);
+      
+      setConversation(prev => [...prev, {
+        type: 'assistant',
+        message: assistantResponse,
+        timestamp: new Date()
+      }]);
+      
+      setTimeout(() => {
+        setIsSpeaking(false);
+      }, 3000);
+    }, 1000);
   };
 
   const askQuickQuestion = (question: string) => {
@@ -79,20 +156,9 @@ export const VoiceAssistant = () => {
       timestamp: new Date()
     }]);
 
-    // Simulate AI response
     setTimeout(() => {
       setIsSpeaking(true);
-      let response = "";
-      
-      if (question.includes("पीले पत्ते")) {
-        response = "पत्ते पीले होने के कई कारण हो सकते हैं - नाइट्रोजन की कमी, पानी की कमी या ज्यादा पानी, या कोई बीमारी। मिट्टी की जांच कराएं और उचित खाद डालें।";
-      } else if (question.includes("खाद")) {
-        response = "मिट्टी की जांच के आधार पर खाद चुनें। सामान्यतः NPK (10:26:26) अच्छी है। जैविक खाद भी मिलाएं जैसे गोबर की खाद या कंपोस्ट।";
-      } else if (question.includes("बारिश")) {
-        response = "बारिश के बाद खेत में जमा पानी निकालें, मिट्टी को हवादार बनाएं, और फंगीसाइड का छिड़काव करें ताकि बीमारी न लगे।";
-      } else {
-        response = "मिट्टी की जांच के लिए नजदीकी कृषि विभाग या प्रयोगशाला में नमूना ले जाएं। pH, NPK, और जैविक कार्बन की जांच जरूरी है।";
-      }
+      const response = getFriendlyResponse(question);
       
       setConversation(prev => [...prev, {
         type: 'assistant',
@@ -110,11 +176,11 @@ export const VoiceAssistant = () => {
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gradient">AI Voice Assistant</h1>
+          <h1 className="text-3xl font-bold text-gradient">{translate('voiceAssistant')}</h1>
           <p className="text-muted-foreground">24/7 talking agriculture expert in your local language</p>
         </div>
         <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-          Unique Feature
+          ChatGPT-like AI
         </Badge>
       </div>
 
@@ -160,7 +226,7 @@ export const VoiceAssistant = () => {
               )}
             </Button>
             <p className="text-sm text-muted-foreground">
-              {isListening ? "बोलिए... / Speaking..." : "माइक दबाएं / Press to speak"}
+              {isListening ? translate('listening') : translate('pressToSpeak')}
             </p>
           </div>
 
@@ -170,12 +236,12 @@ export const VoiceAssistant = () => {
               {isSpeaking ? (
                 <>
                   <Volume2 className="h-4 w-4 text-primary animate-pulse" />
-                  <span className="text-sm text-primary">AI बोल रहा है...</span>
+                  <span className="text-sm text-primary">{translate('speaking')}</span>
                 </>
               ) : (
                 <>
                   <VolumeX className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">तैयार है</span>
+                  <span className="text-sm text-muted-foreground">{translate('ready')}</span>
                 </>
               )}
             </div>
@@ -211,9 +277,23 @@ export const VoiceAssistant = () => {
             ))}
           </div>
 
+          {/* Text Input */}
+          <div className="flex space-x-2">
+            <Input
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder={selectedLanguage === 'hi' ? "यहाँ टाइप करें..." : selectedLanguage === 'te' ? "ఇక్కడ టైప్ చేయండి..." : "Type here..."}
+              onKeyPress={(e) => e.key === 'Enter' && sendTextMessage()}
+              className="flex-1"
+            />
+            <Button onClick={sendTextMessage} disabled={!textInput.trim()}>
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+
           {/* Quick Questions */}
           <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">जल्दी पूछें:</p>
+            <p className="text-sm font-medium text-muted-foreground">{translate('quickQuestions')}:</p>
             <div className="grid grid-cols-1 gap-2">
               {quickQuestions.map((q, index) => (
                 <Button
