@@ -4,7 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { HeroSection } from "@/components/HeroSection";
 import { FeatureShowcase } from "@/components/FeatureShowcase";
 import { AuthModal } from "@/components/AuthModal";
-import { Dashboard } from "@/components/Dashboard";
+import { Navigation } from "@/components/Navigation";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { FeatureGrid } from "@/components/FeatureGrid";
 import { PestIdentification } from "@/components/PestIdentification";
 import { SoilAnalysis } from "@/components/SoilAnalysis";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
@@ -12,6 +14,8 @@ import { MarketWeather } from "@/components/MarketWeather";
 import { LearningHub } from "@/components/LearningHub";
 import { ScheduleTracker } from "@/components/ScheduleTracker";
 import { WaterDetection } from "@/components/WaterDetection";
+import { GroundwaterAnalysis } from "@/components/GroundwaterAnalysis";
+import { AgriMarketplace } from "@/components/AgriMarketplace";
 
 const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
@@ -58,21 +62,85 @@ const Index = () => {
     // Authenticated user pages
     switch (currentPage) {
       case 'pest':
-        return <PestIdentification />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <PestIdentification />
+          </div>
+        );
       case 'soil':
-        return <SoilAnalysis />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <SoilAnalysis />
+          </div>
+        );
       case 'voice':
-        return <VoiceAssistant />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <VoiceAssistant />
+          </div>
+        );
       case 'market':
-        return <MarketWeather />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <MarketWeather />
+          </div>
+        );
       case 'learning':
-        return <LearningHub />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <LearningHub />
+          </div>
+        );
       case 'schedule':
-        return <ScheduleTracker />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <ScheduleTracker />
+          </div>
+        );
       case 'water':
-        return <WaterDetection />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <WaterDetection />
+          </div>
+        );
+      case 'groundwater':
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <GroundwaterAnalysis />
+          </div>
+        );
+      case 'shopping':
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <AgriMarketplace />
+          </div>
+        );
       default:
-        return <Dashboard onNavigate={setCurrentPage} />;
+        return (
+          <div className="min-h-screen bg-gradient-subtle">
+            <Navigation />
+            <LanguageSelector />
+            <FeatureGrid onNavigate={setCurrentPage} />
+          </div>
+        );
     }
   };
 
